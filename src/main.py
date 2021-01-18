@@ -1,5 +1,4 @@
 import csv
-from pandas._config.config import options
 import streamlit as slt
 from random import sample
 
