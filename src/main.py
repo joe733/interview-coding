@@ -14,7 +14,7 @@ def rdn_question_gen():
 
 if __name__ == "__main__":
 
-    with open('qp.csv') as fo:
+    with open('src/qp.csv') as fo:
         contents = csv.reader(fo)
         for idx, row in enumerate(contents):
             problem[row[1]] = row[2:6]
