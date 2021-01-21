@@ -2,46 +2,38 @@ import csv
 import streamlit as slt
 from random import sample
 
+problem = dict()
+marks, ctr = 0, 1
 
-class Quiz:
-    def __init__(self) -> None:
-        self.problem = dict()
-        self.dip_qp, self.cpd_ans = [], []
-        self.crct_ans, self.sel_ans, self.marks = [], [], 0
-
-    def read_csv(self) -> None:
-        """
-        Reads from the csv file
-        """
-        with open('qp.csv') as file:
-            rd = csv.reader(file)
-            for idx, row in enumerate(rd):
-                if idx == 0:  # skip the first row
-                    continue
-                self.problem[row[1]] = row[2:6]
-
-    def control(self) -> None:
-        """
-        Main control of the loop
-        """
-        all_ques = self.problem.keys()
-        self.dip_qp = sample(all_ques, k=len(all_ques))
-        for ctr, q_dip in enumerate(self.dip_qp):
-            a_ans = self.problem[q_dip]
-            self.cpd_ans = sample(a_ans, k=len(a_ans))
-            self.crct_ans.append(sample(a_ans, k=1))
-            self.sel_ans.append(slt.radio(str(ctr + 1) + '. ' + q_dip, (*self.cpd_ans,)))
-        
-        if slt.button("Submit"):
-            for idx, _ in enumerate(self.dip_qp):
-                if self.crct_ans[idx] == self.sel_ans[idx]:
-                    self.marks += 10
-            slt.write(self.marks)
-
-        print(f"Total Marks: {self.marks}")
-
+def rdn_question_gen():
+    for question in rdn_ques:
+        all_options = problem[question]
+        rdn_options = sample(all_options, k=len(all_options))
+        correct_ans = sample(rdn_options, k=1)
+        yield question, rdn_options, correct_ans
 
 if __name__ == "__main__":
-    qz = Quiz()
-    qz.read_csv()
-    qz.control()
+
+    with open('qp.csv') as fo:
+        contents = csv.reader(fo)
+        for idx, row in enumerate(contents):
+            problem[row[1]] = row[2:6]
+
+    problem.pop('Question _Text', None)
+
+    all_ques = problem.keys()
+    no_of_q = len(all_ques)
+    rdn_ques = sample(all_ques, k=no_of_q)
+
+    pb_set = rdn_question_gen()
+    nxt_pb = next(pb_set)
+    sel_ans = slt.radio(str(ctr) + '. ' + nxt_pb[0], nxt_pb[1])
+
+    if sel_ans == nxt_pb[2]:
+        marks += 10
+
+    ctr += 1
+    slt.write(f"Marks: {marks}")
+
+    if ctr >= no_of_q:
+        slt.write(f"Thanks for taking the quiz!")
