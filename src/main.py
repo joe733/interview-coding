@@ -14,6 +14,8 @@ def rdn_question_gen():
 
 if __name__ == "__main__":
 
+    slt.title("Quiz")
+
     with open('src/qp.csv') as fo:
         contents = csv.reader(fo)
         for idx, row in enumerate(contents):
